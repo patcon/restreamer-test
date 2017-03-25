@@ -15,18 +15,22 @@ BUFFER_TIME="2"
 BUFFER_SIZE=$(($BUFFER_TIME * $VIDEO_MAXRATE))
 
 # 21-28 recommended (28 is lower qual)
-CRF="28"                                    # Bitrate de la vidéo en sortie
+CRF="21"                                    # Bitrate de la vidéo en sortie
 FPS="30"                                       # FPS de la vidéo en sortie
 QUAL="medium"                                  # Preset de qualité FFMPEG
-YOUTUBE_URL="rtmp://a.rtmp.youtube.com/live2"  # URL de base RTMP youtube
+RTMP_SERVER_URL="rtmp://a.rtmp.youtube.com/live2"  # URL de base RTMP youtube
 
-SOURCE_URL="$1"
-SOURCE="$(youtube-dl $SOURCE_URL --get-url)"
-echo $SOURCE
-KEY="tgty-v1sr-va5c-drz6"                                     # Clé à récupérer sur l'event youtube
+VIDEO_URL="$1"
+# DASH is a special format the YouTube seems to offer after the livestream. Our
+# tool, `ffmpeg` doesn't seem to know how to use it, so we ignore those streams.
+STREAM_URL="$(youtube-dl $VIDEO_URL --get-url --youtube-skip-dash-manifest)"
+STREAM_KEY="$YOUTUBE_STREAM_KEY"                                     # Clé à récupérer sur l'event youtube
+
+# -strict 2 allows experimental acc audio codec to be used
+# -threads 0 allows ffmpeg to choose optimal number for codec
 
 ffmpeg \
-    -i "$SOURCE" \
+    -i "$STREAM_URL" \
     -codec:v libx264 \
     -preset $QUAL \
     -maxrate ${VIDEO_MAXRATE}k \
@@ -34,9 +38,8 @@ ffmpeg \
     -pix_fmt yuv420p \
     -g $(($FPS * 2)) \
     -crf $CRF \
-    -codec:a libmp3lame \
-    -threads 6 \
-    -b:a ${AUDIO_RATE}k \
-    -ar 44100 \
+    -strict -2 \
+    -codec:a aac \
+    -threads 0 \
     -f flv \
-    "$YOUTUBE_URL/$KEY"
+    "$RTMP_SERVER_URL/$STREAM_KEY"

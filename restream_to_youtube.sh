@@ -5,7 +5,7 @@
 # Configurer youtube avec une résolution 720p. La vidéo n'est pas scalée.
 
 DOWNLOAD_RATE="800000"
-UPLOAD_RATE="300000"
+UPLOAD_RATE="2000" # Seems to be enough to highest quality City stream
 AUDIO_RATE="128"
 # assume 80% reliable capacity of upload
 VIDEO_MAXRATE=$((($UPLOAD_RATE * 80/100) - $AUDIO_RATE))

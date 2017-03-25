@@ -31,20 +31,17 @@ root@workstation:~$ apt-get install python python-pip
 root@workstation:~$ pip install youtube_dl
 ```
 
-Get the URL of a live feed from here: https://www.youtube.com/live
-
-```
-
-```
-
 ## Usage
 
 We are testing the `restream_to_youtube.sh` script on a remote machine
 to get the best bandwidth. The `test.sh` script will upload the main
 script to the server and then run it.
 
+Get the URL of a live feed from here: https://www.youtube.com/live
+
 ```
-./test.sh
+# Defaults to using an archived url (not live)
+./test.sh [ <youtube-video-url> ]
 ```
 
 ### References
